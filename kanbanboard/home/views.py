@@ -1,22 +1,42 @@
 from django.shortcuts import render, redirect
 from .models import Board, Task
 from django.template.loader import get_template
-from home.form import TaskForm, BoardForm
+from home.form import TaskForm, BoardForm, RegisterForm
 from django.http import JsonResponse
+from django.contrib.auth.views import LoginView
 
+class CustomLoginView(LoginView):
+    template_name = 'login.html'
+    redirect_authenticated_user = True
+
+def register_user(request):
+    formregister = RegisterForm()
+    if request.method == 'POST':
+        formregister = RegisterForm(request.POST)
+        if formregister.is_valid():
+            formregister.save()
+            return JsonResponse({'success': 'User created successfully'})
+        else:
+            return JsonResponse({'error': formregister.errors})
+    else:
+        formregister = RegisterForm()
+    
+    context = {
+        'RegisterForm': formregister
+    }
+    return render(request, 'register.html', context)
 
 def home_view(request):
-    tasks_not_started = Task.objects.filter(status ='not_started').order_by('-board__created')
-    tasks_in_progress = Task.objects.filter(status = 'in_progress').order_by('-board__created')
-    tasks_completed = Task.objects.filter(status = 'completed').order_by('-board__created')
+    tasks_not_started = Task.objects.filter(status='not_started').order_by('-board__created')
+    tasks_in_progress = Task.objects.filter(status='in_progress').order_by('-board__created')
+    tasks_completed = Task.objects.filter(status='completed').order_by('-board__created')
     board = Board.objects.prefetch_related('Task').order_by('-created')
 
-
-    context ={
+    context = {
         'tasks_not_started': tasks_not_started,
         'tasks_in_progress': tasks_in_progress,
         'tasks_completed': tasks_completed,
-        'board' : board
+        'board': board
     }
     return render(request, 'home.html', context)
 
@@ -36,8 +56,8 @@ def addtask(request):
             return redirect('home')
 
     context = {
-        'TaskForm':form,
-        'BoardForm' : formboard,
+        'TaskForm': form,
+        'BoardForm': formboard,
     }
     return render(request, 'form.html', context)
 
@@ -77,6 +97,6 @@ def deletetask(request, pk):
         return redirect('home')
     context ={
         'TaskForm': task,
-        'BoardForm':board        
+        'BoardForm': board        
     }
     return render(request, 'delete.html', context)

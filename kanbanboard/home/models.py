@@ -1,6 +1,15 @@
 from django.db import models
 from django.utils.timezone import timezone
 
+class User(models.Model):
+    first_name = models.CharField(max_length = 50)
+    last_name = models.CharField(max_length = 50)
+    username = models.CharField(max_length = 50)
+    password1 = models.CharField(max_length = 125)
+    password2 = models.CharField(max_length = 125)
+    
+    def __str__(self):
+        return self.username
 
 class Board(models.Model):
     name = models.CharField(max_length = 50)
