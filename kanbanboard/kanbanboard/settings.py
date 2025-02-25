@@ -138,4 +138,4 @@ INTERNAL_IPS = [
     "127.0.0.1",
 ]
 
-NPM_BIN_PATH = '/usr/local/bin/npm'
+NPM_BIN_PATH = "/home/meva/.nvm/versions/node/v18.20.7/bin/npm"
