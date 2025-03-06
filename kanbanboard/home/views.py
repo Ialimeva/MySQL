@@ -1,9 +1,11 @@
+import json
 from django.shortcuts import render, redirect
 from .models import Board, Task
-from django.template.loader import get_template
 from home.form import TaskForm, BoardForm, RegisterForm
 from django.http import JsonResponse
 from django.contrib.auth.views import LoginView
+from django.views.decorators.http import require_http_methods
+from django.contrib.auth import logout
 
 class CustomLoginView(LoginView):
     template_name = 'login.html'
@@ -100,3 +102,42 @@ def deletetask(request, pk):
         'BoardForm': board        
     }
     return render(request, 'delete.html', context)
+
+def statistics_view(request):
+    tasks_not_started = Task.objects.filter(status='not_started')
+    tasks_in_progress = Task.objects.filter(status='in_progress')
+    tasks_completed = Task.objects.filter(status='completed')
+    
+    context = {
+        'tasks_not_started': tasks_not_started,
+        'tasks_in_progress': tasks_in_progress,
+        'tasks_completed': tasks_completed,
+        'tasks_total': Task.objects.all(),
+    }
+    return render(request, 'statistics.html', context)
+
+@require_http_methods(["POST"])
+def update_task_status(request):
+    data = json.loads(request.body)
+    task_id = data.get('taskId')
+    new_status = data.get('status')
+    
+    try:
+        task = Task.objects.get(id=task_id)
+        task.status = new_status
+        task.save()
+        return JsonResponse({
+            'status': 'success',
+            'message': 'Task status updated successfully'
+        })
+    except Task.DoesNotExist:
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Task not found'
+        }, status=404)
+
+def logout_view(request):
+    if request.method == 'POST':
+        logout(request)
+        return redirect('login')
+    return redirect('home')

@@ -1,0 +1,98 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="{% static 'output.css' %}" rel="stylesheet">
+    <title>Add Tasks & Boards | Kanban Board</title>
+</head>
+<body class="bg-gray-900 min-h-screen py-12 px-4">
+    <div class="max-w-7xl mx-auto">
+        <!-- Forms Container - Grid Layout -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Task Form -->
+            <div class="bg-white rounded-xl shadow-2xl p-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">Add Task</h2>
+                <form action="" method="POST" class="space-y-6">
+                    {% csrf_token %}
+                    {% for field in TaskForm %}
+                    <div class="space-y-2">
+                        <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {{ field.label }}
+                        </label>
+                        <div class="mt-1">
+                            {{ field.errors }}
+                            {{ field }}
+                        </div>
+                        {% if field.help_text %}
+                        <p class="text-sm text-gray-500">{{ field.help_text }}</p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                    <button type="submit" name="task_submit" 
+                        class="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200">
+                        Create Task
+                    </button>
+                </form>
+            </div>
+
+            <!-- Board Form -->
+            <div class="bg-white rounded-xl shadow-2xl p-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">Add Board</h2>
+                <form action="" method="post" class="space-y-6">
+                    {% csrf_token %}
+                    {% for field in BoardForm %}
+                    <div class="space-y-2">
+                        <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {{ field.label }}
+                        </label>
+                        <div class="mt-1">
+                            {{ field.errors }}
+                            {{ field }}
+                        </div>
+                        {% if field.help_text %}
+                        <p class="text-sm text-gray-500">{{ field.help_text }}</p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                    <button type="submit" name="board_submit"
+                        class="w-full bg-green-600 text-white py-3 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors duration-200">
+                        Create Board
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Custom form field styling */
+        input[type="text"], 
+        input[type="date"],
+        input[type="datetime-local"],
+        select, 
+        textarea {
+            @apply w-full px-3 py-2 border-2 border-gray-300 rounded-md shadow-sm 
+            focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
+            hover:border-gray-400 transition-colors duration-200;
+        }
+        
+        select {
+            @apply bg-white;
+        }
+        
+        textarea {
+            @apply resize-none h-32;
+        }
+        
+        /* Error styling */
+        .errorlist {
+            @apply text-red-500 text-sm mt-1 list-none;
+        }
+        
+        .errorlist li {
+            @apply mb-1;
+        }
+    </style>
+</body>
+</html>

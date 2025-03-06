@@ -1,0 +1,123 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="{% static 'output.css' %}" rel="stylesheet">
+    <title>Statistics | Kanban Board</title>
+</head>
+<body class="bg-gray-900">
+    <!-- Sidebar -->
+    <div class="fixed top-0 left-0 h-screen w-64 m-0 flex flex-col bg-gray-800 text-white shadow-lg shadow-gray-700/50" name="sidebar">
+        <div class="p-4 space-y-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-2xl font-bold">Kanban Board</h2>
+                <form action="{% url 'logout' %}" method="POST" class="inline">
+                    {% csrf_token %}
+                    <button type="submit" 
+                        class="text-gray-300 hover:text-white p-2 rounded-md hover:bg-gray-700 transition-colors duration-200">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                    </button>
+                </form>
+            </div>
+            <nav class="space-y-2">
+                <!-- Home Link -->
+                <a href="{% url 'home' %}" 
+                   class="group relative flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md transition-all duration-300 ease-in-out">
+                    <!-- Home Icon -->
+                    <svg class="h-5 w-5 mr-3" viewBox="0 0 24 24" fill="none">
+                        <path d="M3 12L5 10M5 10L12 3L19 10M5 10V20C5 20.5523 5.44772 21 6 21H9M19 10L21 12M19 10V20C19 20.5523 18.5523 21 18 21H15M9 21C9.55228 21 10 20.5523 10 20V16C10 15.4477 10.4477 15 11 15H13C13.5523 15 14 15.4477 14 16V20C14 20.5523 14.4477 21 15 21M9 21H15" 
+                            stroke="currentColor" 
+                            stroke-width="2" 
+                            stroke-linecap="round" 
+                            stroke-linejoin="round"/>
+                    </svg>
+                    <span>Home</span>
+                </a>
+
+                <!-- Statistics Link -->
+                <a href="{% url 'statistics' %}" 
+                   class="group relative flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md transition-all duration-300 ease-in-out">
+                    <!-- Chart Icon -->
+                    <svg class="h-5 w-5 mr-3" viewBox="0 0 24 24" fill="none">
+                        <path d="M8 13V17M16 8V17M12 3V17M3 17H21M4 21H20" 
+                            stroke="currentColor" 
+                            stroke-width="2" 
+                            stroke-linecap="round" 
+                            stroke-linejoin="round"/>
+                    </svg>
+                    <span>Statistics</span>
+                </a>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="ml-64 p-8">
+        <h1 class="text-4xl font-bold mb-8 text-white">Statistics</h1>
+        <div class="bg-white rounded-xl shadow-2xl p-6">
+            <!-- Your existing statistics content -->
+            <div class="relative pt-1">
+                <!-- Not Started Bar -->
+                <div class="mb-6">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm font-semibold text-gray-700">Not Started</span>
+                        <span class="text-sm font-semibold text-gray-700">{{ tasks_not_started.count }}</span>
+                    </div>
+                    <div class="overflow-hidden h-4 mt-2 text-xs flex rounded bg-gray-200">
+                        <div class="bg-red-500 opacity-75 shadow-none whitespace-nowrap"
+                             style="width: {% widthratio tasks_not_started.count tasks_total.count 100 %}%">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- In Progress Bar -->
+                <div class="mb-6">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm font-semibold text-gray-700">In Progress</span>
+                        <span class="text-sm font-semibold text-gray-700">{{ tasks_in_progress.count }}</span>
+                    </div>
+                    <div class="overflow-hidden h-4 mt-2 text-xs flex rounded bg-gray-200">
+                        <div class="bg-yellow-500 opacity-75 shadow-none whitespace-nowrap"
+                             style="width: {% widthratio tasks_in_progress.count tasks_total.count 100 %}%">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Completed Bar -->
+                <div class="mb-6">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm font-semibold text-gray-700">Completed</span>
+                        <span class="text-sm font-semibold text-gray-700">{{ tasks_completed.count }}</span>
+                    </div>
+                    <div class="overflow-hidden h-4 mt-2 text-xs flex rounded bg-gray-200">
+                        <div class="bg-green-500 opacity-75 shadow-none whitespace-nowrap"
+                             style="width: {% widthratio tasks_completed.count tasks_total.count 100 %}%">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Legend -->
+            <div class="flex justify-center space-x-4 mt-6">
+                <div class="flex items-center">
+                    <div class="w-3 h-3 bg-red-500 opacity-75 rounded mr-2"></div>
+                    <span class="text-sm text-gray-600">Not Started</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-3 h-3 bg-yellow-500 opacity-75 rounded mr-2"></div>
+                    <span class="text-sm text-gray-600">In Progress</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-3 h-3 bg-green-500 opacity-75 rounded mr-2"></div>
+                    <span class="text-sm text-gray-600">Completed</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
